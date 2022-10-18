@@ -19,8 +19,7 @@ class Users(Base):
 
     id = Column(Integer, primary_key=True)
     username = Column(String(100))
-    first_name = Column(String(100))
-    last_name = Column(String(100))
+    email = Column(String(100))
     password = Column(String(100))
 
 Base.metadata.create_all(engine)

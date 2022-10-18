@@ -12,8 +12,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['http://localhost:3000']
+    allow_origins=['*']
 )
+
+# http://localhost:3000
 
 @app.get('/')
 async def get_users():
@@ -22,20 +24,19 @@ async def get_users():
 
     for user in users:
         usersDict[int(user.id)] = {
-            'first_name' : user.first_name,
-            'last_name' : user.last_name,
+            'email': user.email,
             'username' : user.username,
         }
 
     return usersDict
 
 @app.post('/signup')
-async def signup(username: str = Form(...), first_name: str = Form(...), last_name: str = Form(...), password: str = Form(...)):
+async def signup(username: str = Form(...), email: str = Form(...), password: str = Form(...)):
 
     
     password = hashlib.sha256(password.encode()).hexdigest()
 
-    newUser = Users(username=username, first_name=first_name, last_name=last_name, password=password)
+    newUser = Users(username=username, email=email, password=password)
     session.add(newUser)
     session.commit()
 
@@ -43,7 +44,6 @@ async def signup(username: str = Form(...), first_name: str = Form(...), last_na
 
     return {
         'username' : username,
-        'first_name' : first_name,
-        'last_name' : last_name,
+        'email' : email,
         'password' : password
     }
