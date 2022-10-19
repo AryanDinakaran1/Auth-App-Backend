@@ -10,9 +10,17 @@ from models import Users, session
 
 app = FastAPI()
 
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*']
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # http://localhost:3000
@@ -31,8 +39,7 @@ async def get_users():
     return usersDict
 
 @app.post('/signup')
-async def signup(username: str = Form(...), email: str = Form(...), password: str = Form(...)):
-
+async def signup(username: str, email: str, password: str):
     
     password = hashlib.sha256(password.encode()).hexdigest()
 
