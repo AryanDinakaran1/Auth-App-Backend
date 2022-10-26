@@ -5,8 +5,9 @@ from decouple import config
 from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 
-from models import Users, session
+from pydantic import BaseModel
 
+from models import Users, session
 
 app = FastAPI()
 
@@ -25,6 +26,12 @@ app.add_middleware(
 
 # http://localhost:3000
 
+# Pydantic model sovled the problem
+class User(BaseModel):
+    username: str
+    email: str
+    password: str
+
 @app.get('/')
 async def get_users():
     users = session.query(Users)
@@ -39,18 +46,16 @@ async def get_users():
     return usersDict
 
 @app.post('/signup')
-async def signup(username: str, email: str, password: str):
+async def signup(User: User):
     
-    password = hashlib.sha256(password.encode()).hexdigest()
+    password = hashlib.sha256(User.password.encode()).hexdigest()
 
-    newUser = Users(username=username, email=email, password=password)
+    newUser = Users(username=User.username, email=User.email, password=password)
     session.add(newUser)
     session.commit()
 
-    # Write code to redirect to an external page and test it
-
     return {
-        'username' : username,
-        'email' : email,
+        'username' : User.username,
+        'email' : User.email,
         'password' : password
     }
